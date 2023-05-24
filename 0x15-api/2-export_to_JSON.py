@@ -1,27 +1,26 @@
-#!/usr/bin/python3
-"""
-Return information for a given employee about his/her TODO list progress
-"""
-if __name__ == "__main__":
-    import json
-    import requests
-    import sys
+import json
 
-    DONE_TASKS = 0
-    ALL_TASKS = 0
-    csvList = []
+def export_tasks_to_json(user_id, tasks):
+    data = {user_id: []}
+    for task in tasks:
+        data[user_id].append({
+            "task": task["title"],
+            "completed": task["completed"],
+            "username": task["username"]
+        })
+    
+    file_name = f"{user_id}.json"
+    with open(file_name, "w") as json_file:
+        json.dump(data, json_file)
 
-    URL_FOR_USERS = 'https://jsonplaceholder.typicode.com/users/{0}'.\
-        format(sys.argv[1])
-    URL_FOR_TODOS = 'https://jsonplaceholder.typicode.com/todos'
-    r_for_users = requests.get(URL_FOR_USERS)
-    r_for_todos = requests.get(URL_FOR_TODOS)
+# Example usage
+user_id = "USER123"
+tasks = [
+    {"title": "Task 1", "completed": False, "username": "John"},
+    {"title": "Task 2", "completed": True, "username": "John"},
+    {"title": "Task 3", "completed": True, "username": "John"},
+    {"title": "Task 4", "completed": False, "username": "John"}
+]
 
-    name = r_for_users.json().get('name')
-    user_name = r_for_users.json().get('username')
-    todos = r_for_todos.json()
-    with open(sys.argv[1] + '.json', 'w+') as f:
-        json.dump({sys.argv[1]: [{
-            "task": todo.get("title"),
-            "completed": todo.get("completed"),
-            "username": user_name} for todo in todos]}, f))
+export_tasks_to_json(user_id, tasks)
+
